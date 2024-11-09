@@ -1,35 +1,57 @@
 class Item:
-    def __init__(self, profit, weight):
-        self.profit = profit
-        self.weight = weight
+    def __init__(self, pro, wt):
+        self.pro = pro
+        self.wt = wt
 
-def fractionalknapsack(w, arr):
-    # Sort items by profit-to-weight ratio in decreasing order
-    arr.sort(key=lambda x: x.profit / x.weight, reverse=True)
-    
-    final_value = 0.0  # Variable to store the total value in knapsack
-    
-    for item in arr:
-        if w >= item.weight:
-            # Take the whole item
-            final_value += item.profit
-            w -= item.weight
+def knapsack(limit, arr):
+    arr_copy = arr[:]
+    arr_copy.sort(key=lambda x: (x.pro / x.wt), reverse=True)  # Max Profit/Weight
+    total = 0.0
+    for i in arr_copy:
+        if i.wt <= limit:
+            limit -= i.wt
+            total += i.pro
         else:
-            # Take the fraction of the item that fits
-            final_value += item.profit * (w / item.weight)
+            total += (i.pro * limit) / i.wt
             break
+    return total
 
-    return final_value
+def knapsack_p(limit, arr):
+    arr_copy = arr[:]
+    arr_copy.sort(key=lambda x: (x.pro), reverse=True)  # Max profit
+    total = 0.0
+    for i in arr_copy:
+        if i.wt <= limit:
+            limit -= i.wt
+            total += i.pro
+        else:
+            total += (i.pro * limit) / i.wt
+            break
+    return total
+
+def knapsack_w(limit, arr):
+    arr_copy = arr[:]
+    arr_copy.sort(key=lambda x: (x.wt))  # Min Weight
+    total = 0.0
+    for i in arr_copy:
+        if i.wt <= limit:
+            limit -= i.wt
+            total += i.pro
+        else:
+            total += (i.pro * limit) / i.wt
+            break
+    return total
 
 if __name__ == "__main__":
-    n = int(input("Enter number of items:\n"))
-    
+    limit = float(input("Enter the knapsack limit: "))
+    num_items = int(input("Enter the number of items: "))
     arr = []
-    for i in range(n):
-        profit = int(input("Enter profit of item " + str(i+1) + ":\n"))
-        weight = int(input("Enter weight of item " + str(i+1) + ":\n"))
-        arr.append(Item(profit, weight))
-    
-    w = int(input("Enter capacity of knapsack:\n"))
 
-    print("Maximum value in knapsack:", fractionalknapsack(w, arr))
+    for i in range(num_items):
+        pro = float(input(f"Enter profit for item {i+1}: "))
+        wt = float(input(f"Enter weight for item {i+1}: "))
+        arr.append(Item(pro, wt))
+
+    print(f"Maximum profit (by Profit/Weight ratio): {knapsack(limit, arr)}")
+    print(f"Maximum profit (by Profit): {knapsack_p(limit, arr)}")
+    print(f"Maximum profit (by Minimum Weight): {knapsack_w(limit, arr)}")

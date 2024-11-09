@@ -1,44 +1,32 @@
-# Non Recursive
+def fibonacci(n):
+    a = 0
+    b = 1
+    sequence = [a]  # Start the sequence with the first Fibonacci number
+    if n > 0:
+        sequence.append(b)  # Add the second Fibonacci number if n > 0
+    for i in range(2, n):
+        c = a + b
+        sequence.append(c)  # Add the next Fibonacci number to the sequence
+        a = b
+        b = c
+    return sequence
 
-nterms = int(input("How many terms? "))
+def fibonacci_rec(n, sequence=None):
+    if sequence is None:
+        sequence = [0]  # Start with the first Fibonacci number
+    if n == 0:
+        return sequence
+    elif n == 1:
+        sequence.append(1)
+        return sequence
+    else:
+        fibonacci_rec(n - 1, sequence)
+        sequence.append(sequence[-1] + sequence[-2])  # Add the next number to the sequence
+        return sequence
 
-# first two terms
-n1, n2 = 0, 1
-count = 0
+n = int(input("Enter the position of the Fibonacci number you want to find: "))
+print(f"Fibonacci sequence up to {n}th number without recursion: ")
+print(fibonacci(n))
 
-# check if the number of terms is valid
-if nterms <= 0:
-    print("Please enter a positive integer")
-# if there is only one term, return n1
-elif nterms == 1:
-    print("Fibonacci sequence up to", nterms, ":")
-    print(n1)
-# generate Fibonacci sequence
-else:
-    print("Fibonacci sequence:")
-    while count < nterms:
-        print(n1)
-        nth = n1 + n2
-        # update values
-        n1 = n2
-        n2 = nth
-        count += 1
-
-
-
-# //Recursive
-def recur_fibo(n):
-   if n <= 1:
-       return n
-   else:
-       return(recur_fibo(n-1) + recur_fibo(n-2))
-
-nterms = 10
-
-# check if the number of terms is valid
-if nterms <= 0:
-   print("Plese enter a positive integer")
-else:
-   print("Fibonacci sequence:")
-   for i in range(nterms):
-       print(recur_fibo(i))
+print(f"Fibonacci sequence up to {n}th number with recursion: ")
+print(fibonacci_rec(n))

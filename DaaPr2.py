@@ -1,76 +1,66 @@
-import heapq
-
-# Class to represent a Huffman Tree Node
 class Node:
     def __init__(self, freq, symbol, left=None, right=None):
-        self.freq = freq  # Frequency of the character
-        self.symbol = symbol  # The character itself
-        self.left = left  # Left child
-        self.right = right  # Right child
-        self.huff = ""  # Huffman code for the character
+        self.freq = freq
+        self.symbol = symbol
+        self.left = left
+        self.right = right
+        self.huff = ''  # Huffman code for this node
 
-    # Comparator function for priority queue (heapq)
-    def __lt__(self, other):
-        return self.freq < other.freq
+# Function to print the Huffman codes for each symbol
+def printNodes(node, val=''):
+    # Create a new Huffman code by appending the current node's Huffman code
+    newVal = val + str(node.huff)
 
-# Function to print the Huffman codes and calculate the encoded lengths
-def printNodes(node, val=""):
-    new_val = val + node.huff  # Update the current Huffman code
-    if node.left or node.right:  # If there are children, keep traversing
-        if node.left:
-            printNodes(node.left, new_val)
-        if node.right:
-            printNodes(node.right, new_val)
-    else:
-        # If it's a leaf node, print the symbol and its Huffman code
-        print(f"{node.symbol} -> {new_val}")
-        encoded_lengths[node.symbol] = len(new_val)
+    # If the node has a left child, recursively call the function
+    if node.left:
+        printNodes(node.left, newVal)
 
-# Getting user input for characters and their frequencies
-num_chars = int(input("Enter number of characters: "))
+    # If the node has a right child, recursively call the function
+    if node.right:
+        printNodes(node.right, newVal)
+
+    # If it's a leaf node (no children), print the symbol and its Huffman code
+    if not node.left and not node.right:
+        print(f"{node.symbol} -> {newVal}")
+
+# Input: Number of symbols and their frequencies
+num_symbols = int(input("Enter the number of symbols: "))
 chars = []
-freqs = []
+freq = []
 
-for i in range(num_chars):
-    char = input(f"Enter character {i + 1}: ")
-    freq = int(input(f"Enter frequency of character {char}: "))
-    chars.append(char)
-    freqs.append(freq)
+print("Enter the symbols and their frequencies:")
+for i in range(num_symbols):
+    symbol = input(f"Enter symbol {i+1}: ")
+    frequency = int(input(f"Enter frequency of {symbol}: "))
+    chars.append(symbol)
+    freq.append(frequency)
 
-# Creating the priority queue (min heap) of nodes
+# Create a list of nodes for each symbol
 nodes = []
 for i in range(len(chars)):
-    heapq.heappush(nodes, Node(freqs[i], chars[i]))
+    nodes.append(Node(freq[i], chars[i]))
 
-# Building the Huffman Tree
+# Construct the Huffman Tree
 while len(nodes) > 1:
-    left = heapq.heappop(nodes)  # Node with the lowest frequency
-    right = heapq.heappop(nodes)  # Node with the second lowest frequency
+    # Sort the nodes based on frequency (ascending order)
+    nodes = sorted(nodes, key=lambda x: x.freq)
 
-    left.huff = "0"  # Assign 0 to the left child
-    right.huff = "1"  # Assign 1 to the right child
+    # Select the two nodes with the lowest frequency
+    left = nodes[0]
+    right = nodes[1]
 
-    # Create a new internal node with the sum of the frequencies
-    new_node = Node(left.freq + right.freq, left.symbol + right.symbol, left, right)
-    heapq.heappush(nodes, new_node)
+    # Assign Huffman codes (0 for left, 1 for right)
+    left.huff = 0
+    right.huff = 1
 
-# Calculating total size before encoding
-total_size_before = sum(freqs) * 8
+    # Create a new node by combining the two nodes
+    newNode = Node(left.freq + right.freq, left.symbol + right.symbol, left, right)
 
-# Printing the nodes and calculating encoded lengths
-encoded_lengths = {}
-print("Huffman Codes:")
+    # Remove the two nodes from the list and add the new node
+    nodes.remove(left)
+    nodes.remove(right)
+    nodes.append(newNode)
+
+# Print the Huffman codes
+print("\nHuffman Codes:")
 printNodes(nodes[0])
-
-# Calculating total size after encoding
-total_size_after = sum(freqs[i] * encoded_lengths[chars[i]] for i in range(num_chars))
-
-# Calculating encoded data representation (compressed size)
-characters = num_chars * 8
-frequency = sum(freqs)
-encoded_data_representation = characters + frequency + total_size_after
-
-# Output results
-print("\nTotal size before encoding:", total_size_before, "bits")
-print("Total size after encoding:", total_size_after, "bits")
-print("Encoded Data Representation:", encoded_data_representation, "bits")
